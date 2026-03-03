@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS guest
     first_name        varchar(255)          NOT NULL,
     patronymic        varchar(255),
     birth_date        date                  NOT NULL,
-    phone             varchar(20)           NOT NULL
+    phoneNumber             varchar(20)           NOT NULL
 );
 
 
