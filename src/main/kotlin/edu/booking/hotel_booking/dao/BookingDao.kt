@@ -83,12 +83,12 @@ class BookingDao (private val jdbcTemplate: NamedParameterJdbcTemplate) {
         insertBookingGuest(booking.id, booking.guests)
     }
 
-    fun delete(id: UUID) {
+    fun delete(id: UUID): Int {
         val sqlQueryBooking = """DELETE FROM booking WHERE id = :id"""
         val parametersBooking = mapOf(
             "id" to id,
         )
-        jdbcTemplate.update(sqlQueryBooking, parametersBooking)
+        return jdbcTemplate.update(sqlQueryBooking, parametersBooking)
     }
 
     private fun insertBookingGuest(bookingId: UUID, guests: List<GuestEntity>) {

@@ -6,6 +6,6 @@ import java.util.UUID
 data class BookingRequest(
     val checkIn : OffsetDateTime,
     val checkOut: OffsetDateTime,
-    val guests : List<GuestRequest>,
+    val guestsIds : List<UUID>,
     val roomId : UUID
 )

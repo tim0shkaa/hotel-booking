@@ -38,11 +38,11 @@ class RoomDao (private val jdbcTemplate: NamedParameterJdbcTemplate) {
         jdbcTemplate.update(sqlQuery, parameters)
     }
 
-    fun update(id : UUID, room : RoomEntity) {
+    fun update(room : RoomEntity) {
         val sqlQuery = """UPDATE room SET floor = :floor, room_number = :room_number, capacity = :capacity
             WHERE id = :id"""
         val parameters = mapOf(
-            "id" to id,
+            "id" to room.id,
             "floor" to room.floor,
             "room_number" to room.roomNumber,
             "capacity" to room.capacity
@@ -50,10 +50,10 @@ class RoomDao (private val jdbcTemplate: NamedParameterJdbcTemplate) {
         jdbcTemplate.update(sqlQuery, parameters)
     }
 
-    fun delete(id : UUID) {
+    fun delete(id : UUID): Int {
         val sqlQuery = """DELETE FROM room WHERE id = :id"""
         val parameters = mapOf("id" to id)
-        jdbcTemplate.update(sqlQuery, parameters)
+        return jdbcTemplate.update(sqlQuery, parameters)
     }
 
     fun findPossibleRoom(checkIn: OffsetDateTime, checkOut: OffsetDateTime) : List<RoomEntity> {
