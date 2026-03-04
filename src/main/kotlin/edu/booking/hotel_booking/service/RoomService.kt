@@ -26,7 +26,7 @@ class RoomService (private val roomDao: RoomDao) {
         return entityToResponse(entity)
     }
 
-    fun updateRoom(id: UUID, request: RoomRequest): RoomResponse? {
+    fun updateRoom(id: UUID, request: RoomRequest): RoomResponse {
         val exist = roomDao.findById(id) ?: throw NoSuchElementException("Room with id $id not found")
         val entity = exist.copy(
             floor = request.floor,

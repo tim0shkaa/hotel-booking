@@ -59,7 +59,7 @@ class RoomDao (private val jdbcTemplate: NamedParameterJdbcTemplate) {
     fun findAvailableRoom(checkIn: OffsetDateTime, checkOut: OffsetDateTime) : List<RoomEntity> {
         val sqlQuery = """SELECT * FROM room r WHERE NOT EXISTS (
             SELECT 1 FROM booking b WHERE r.id = b.room_id AND
-            b.check_in < :checkOut AND b.check_out > :checkIn 
+            b.check_in < :check_out AND b.check_out > :check_in )
         """
         val parameters = mapOf(
             "check_in" to checkIn,

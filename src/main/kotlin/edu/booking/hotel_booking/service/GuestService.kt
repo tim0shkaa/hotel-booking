@@ -28,7 +28,7 @@ class GuestService (private val guestDao: GuestDao) {
         return entityToResponse(entity)
     }
 
-    fun updateGuest(id: UUID, request: GuestRequest): GuestResponse? {
+    fun updateGuest(id: UUID, request: GuestRequest): GuestResponse {
         val exist = guestDao.findById(id) ?: throw NoSuchElementException("Guest with id $id not found")
         val entity = exist.copy(
             firstName = request.firstName,
