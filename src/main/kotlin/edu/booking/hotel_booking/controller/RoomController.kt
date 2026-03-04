@@ -1,6 +1,5 @@
 package edu.booking.hotel_booking.controller
 
-import edu.booking.hotel_booking.dto.Room
 import edu.booking.hotel_booking.dto.request.RoomRequest
 import edu.booking.hotel_booking.dto.response.RoomResponse
 import edu.booking.hotel_booking.service.RoomService
@@ -40,11 +39,12 @@ class RoomController (
         @RequestBody request: RoomRequest,
     ): ResponseEntity<RoomResponse> {
         val room = roomService.updateRoom(id, request)
-        return ResponseEntity.status(201).body(room)
+        return ResponseEntity.ok(room)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteRoom(@PathVariable id: Long): ResponseEntity<Room> {
-        throw UnsupportedOperationException("Not implemented yet")
+    fun deleteRoom(@PathVariable id: UUID): ResponseEntity<Void> {
+        roomService.deleteRoom(id)
+        return ResponseEntity.noContent().build()
     }
 }

@@ -54,8 +54,8 @@ class BookingService (
         if (deleted == 0) throw NoSuchElementException("Booking with id $id not found")
     }
 
-    fun findPossibleRooms(checkIn: OffsetDateTime, checkOut: OffsetDateTime): List<RoomResponse> {
-        val entity = roomDao.findPossibleRoom(checkIn, checkOut)
+    fun findAvailableRooms(checkIn: OffsetDateTime, checkOut: OffsetDateTime): List<RoomResponse> {
+        val entity = roomDao.findAvailableRoom(checkIn, checkOut)
         return entity.map { entityToResponse(it) }
     }
 
