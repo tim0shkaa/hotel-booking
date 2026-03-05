@@ -13,6 +13,7 @@ import edu.booking.hotelbooking.entity.RoomEntity
 import edu.booking.hotelbooking.kafka.EventType
 import edu.booking.hotelbooking.kafka.KafkaProducer
 import edu.booking.hotelbooking.kafka.event.BookingEvent
+import edu.booking.hotelbooking.metrics.HotelBookingMetrics
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -22,7 +23,8 @@ class BookingService(
     private val bookingDao: BookingDao,
     private val roomDao: RoomDao,
     private val guestDao: GuestDao,
-    private val kafkaProducer: KafkaProducer
+    private val kafkaProducer: KafkaProducer,
+    private val hotelBookingMetrics: HotelBookingMetrics
 ) {
     fun findBookingById(id: UUID): BookingResponse? {
         val entity = bookingDao.findById(id)
@@ -41,6 +43,7 @@ class BookingService(
         bookingDao.create(entity)
         val response = entityToResponse(entity)
         kafkaProducer.sendBookingEvent(BookingEvent(EventType.CREATED, response))
+        hotelBookingMetrics.bookingsCreated.increment()
         return response
     }
 
