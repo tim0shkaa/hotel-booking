@@ -10,6 +10,9 @@ import edu.booking.hotelbooking.dto.response.RoomResponse
 import edu.booking.hotelbooking.entity.BookingEntity
 import edu.booking.hotelbooking.entity.GuestEntity
 import edu.booking.hotelbooking.entity.RoomEntity
+import edu.booking.hotelbooking.kafka.EventType
+import edu.booking.hotelbooking.kafka.KafkaProducer
+import edu.booking.hotelbooking.kafka.event.BookingEvent
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -19,6 +22,7 @@ class BookingService(
     private val bookingDao: BookingDao,
     private val roomDao: RoomDao,
     private val guestDao: GuestDao,
+    private val kafkaProducer: KafkaProducer
 ) {
     fun findBookingById(id: UUID): BookingResponse? {
         val entity = bookingDao.findById(id)
@@ -35,7 +39,9 @@ class BookingService(
                 roomId = booking.roomId,
             )
         bookingDao.create(entity)
-        return entityToResponse(entity)
+        val response = entityToResponse(entity)
+        kafkaProducer.sendBookingEvent(BookingEvent(EventType.CREATED, response))
+        return response
     }
 
     fun updateBooking(
@@ -51,7 +57,9 @@ class BookingService(
                 roomId = booking.roomId,
             )
         bookingDao.update(entity)
-        return entityToResponse(entity)
+        val response = entityToResponse(entity)
+        kafkaProducer.sendBookingEvent(BookingEvent(EventType.UPDATED, response))
+        return response
     }
 
     fun deleteBooking(id: UUID) {

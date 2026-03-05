@@ -4,11 +4,17 @@ import edu.booking.hotelbooking.dao.RoomDao
 import edu.booking.hotelbooking.dto.request.RoomRequest
 import edu.booking.hotelbooking.dto.response.RoomResponse
 import edu.booking.hotelbooking.entity.RoomEntity
+import edu.booking.hotelbooking.kafka.EventType
+import edu.booking.hotelbooking.kafka.KafkaProducer
+import edu.booking.hotelbooking.kafka.event.RoomEvent
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class RoomService(private val roomDao: RoomDao) {
+class RoomService(
+    private val roomDao: RoomDao,
+    private val kafkaProducer: KafkaProducer
+) {
     fun findRoomById(id: UUID): RoomResponse? {
         val entity = roomDao.findById(id)
         return entity?.let { entityToResponse(it) }
@@ -23,7 +29,9 @@ class RoomService(private val roomDao: RoomDao) {
                 capacity = request.capacity,
             )
         roomDao.create(entity)
-        return entityToResponse(entity)
+        val response = entityToResponse(entity)
+        kafkaProducer.sendRoomEvent(RoomEvent(EventType.CREATED, response))
+        return response
     }
 
     fun updateRoom(
@@ -38,12 +46,15 @@ class RoomService(private val roomDao: RoomDao) {
                 capacity = request.capacity,
             )
         roomDao.update(entity)
-        return entityToResponse(entity)
+        val response = entityToResponse(entity)
+        kafkaProducer.sendRoomEvent(RoomEvent(EventType.UPDATED, response))
+        return response
     }
 
     fun deleteRoom(id: UUID) {
-        val deleted = roomDao.delete(id)
-        if (deleted == 0) throw NoSuchElementException("Room with id $id not found")
+        val entity = roomDao.findById(id) ?: throw NoSuchElementException("Room with id $id not found")
+        roomDao.delete(id)
+        kafkaProducer.sendRoomEvent(RoomEvent(EventType.DELETED, entityToResponse(entity)))
     }
 
     private fun entityToResponse(entity: RoomEntity): RoomResponse {
