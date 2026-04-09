@@ -8,3 +8,17 @@ spring:
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
